@@ -1,0 +1,73 @@
+# .NET build artifacts
+bin/
+obj/
+out/
+
+# Rider project files
+.idea/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core secrets
+secrets.json
+
+# dotenv environment files
+.env
+.env.*
+
+# VS Code files
+.vscode/
+.history/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Test Results
+TestResults/
+*.trx
+
+# Entity Framework Migrations snapshots
+*Migrations*/Snapshot.cs
+
+# Publish output
+publish/
+wwwroot/
+
+# Jupyter Notebook check points
+.ipynb_checkpoints/
+
+# Jupyter notebook runtime
+*.ipynb-meta
+
+# Python virtual environments (if used for notebook)
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Resharper / Rider
+_ReSharper*/
+*.DotSettings.user
+.idea/
+
+# Local certificates
+*.pfx
+*.p12
+
+# Database files (if any)
+*.mdf
+*.ldf
+*.ndf
