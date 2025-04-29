@@ -82,9 +82,9 @@ dotnet test
 
 open notebook/verify_data.ipynb file and set Configuration variables:
 
-- base_url = "http://localhost:5103"  # Change if needed
-- endpoint = "/api/measurements?page=1&pageSize=10" # Change page and pageSize if needed
-- token = "Tenant_1_token"  # Actual token values (Tenant_1_token, Tenant_2_token)
+- base_url = "http://localhost:5103"  **Change if needed**
+- endpoint = "/api/measurements?page=1&pageSize=10" **Change page and pageSize if needed**
+- token = "Tenant_1_token" **Actual token values (Tenant_1_token, Tenant_2_token)**
 
 ```bash
 cd notebook
