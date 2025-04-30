@@ -1,3 +1,5 @@
+using EnergsoftInterview.Api.Common.Enums;
+
 namespace EnergsoftInterview.Api.Entities
 {
     public class Tenant
@@ -5,5 +7,7 @@ namespace EnergsoftInterview.Api.Entities
         public int Id { get; set; }
         public string Name { get; set; } = default!;
         public string Token { get; set; } = default!;
+
+        public DataSourceType DataSource { get; set; }
     }
 }

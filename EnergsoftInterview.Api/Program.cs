@@ -1,5 +1,6 @@
 using EnergsoftInterview.Api.Common;
-using EnergsoftInterview.Api.Data;
+using EnergsoftInterview.Api.Common.DataContext;
+using EnergsoftInterview.Api.Common.CosmosDb.Configuration;
 using EnergsoftInterview.Api.Middleware;
 using EnergsoftInterview.Api.Repositories;
 using EnergsoftInterview.Api.Services;
@@ -7,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+builder.Configuration.AddEnvironmentVariables();
 
-if (string.IsNullOrWhiteSpace(connectionString))
+var sqlConnectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(sqlConnectionString))
 {
     throw new Exception("Connection string not found in environment variables.");
 }
@@ -18,7 +21,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
-        connectionString,
+        sqlConnectionString,
         sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure(
@@ -29,8 +32,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         }
     ));
 
+builder.Services.Configure<CosmosDbSettings>(options =>
+{
+    var connectionString = Environment.GetEnvironmentVariable("COSMOSDB_CONNECTIONSTRING");
+    var databaseName = Environment.GetEnvironmentVariable("COSMOSDB_DATABASE");
+    var containerName = Environment.GetEnvironmentVariable("COSMOSDB_CONTAINER");
+
+    options.ConnectionString = connectionString;
+    options.DatabaseName = databaseName;
+    options.ContainerName = containerName;
+});
+
+builder.Services.AddScoped<SqlMeasurementRepository>();
+builder.Services.AddScoped<CosmosMeasurementRepository>();
+builder.Services.AddScoped<IMeasurementRepositoryFactory, MeasurementRepositoryFactory>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
-builder.Services.AddScoped<IMeasurementRepository, MeasurementRepository>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddHttpContextAccessor();

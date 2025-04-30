@@ -1,4 +1,4 @@
-using EnergsoftInterview.Api.Common;
+using EnergsoftInterview.Api.Common.DataContext;
 using EnergsoftInterview.Api.DTOs;
 using EnergsoftInterview.Api.Repositories;
 
@@ -6,22 +6,23 @@ namespace EnergsoftInterview.Api.Services
 {
     public class MeasurementService : IMeasurementService
     {
-        private readonly IMeasurementRepository _measurementRepository;
+        private readonly IMeasurementRepositoryFactory _factory;
         private readonly ITenantContext _tenantContext;
 
         public MeasurementService(
-            IMeasurementRepository measurementRepository,
+            IMeasurementRepositoryFactory factory,
             ITenantContext tenantContext)
         {
-            _measurementRepository = measurementRepository;
+            _factory = factory;
             _tenantContext = tenantContext;
         }
 
-        public async Task<PagedResult<MeasurementDto>> GetMeasurementsAsync(int page, int pageSize)
+        public async Task<PagedResultDto<MeasurementDto>> GetMeasurementsAsync(int page, int pageSize, string? continuationToken = null)
         {
             var tenantId = await _tenantContext.GetTenantIdAsync();
+            var repo = await _factory.CreateAsync(tenantId);
 
-            var result = await _measurementRepository.GetMeasurementsAsync(tenantId, page, pageSize);
+            var result = await repo.GetMeasurementsAsync(tenantId, page, pageSize, continuationToken);
 
             var measurements = result.Items.Select(m => new MeasurementDto
             {
@@ -32,10 +33,11 @@ namespace EnergsoftInterview.Api.Services
                 Timestamp = m.Timestamp
             });
 
-            return new PagedResult<MeasurementDto>
+            return new PagedResultDto<MeasurementDto>
             {
                 TotalCount = result.TotalCount,
-                Items = measurements
+                Items = measurements,
+                ContinuationToken = result.ContinuationToken
             };
         }
     }

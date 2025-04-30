@@ -1,4 +1,4 @@
-using EnergsoftInterview.Api.Data;
+using EnergsoftInterview.Api.Common.DataContext;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnergsoftInterview.Api.Services

@@ -3,10 +3,16 @@ using EnergsoftInterview.Api.Services;
 using EnergsoftInterview.Api.Entities;
 using EnergsoftInterview.Api.Repositories;
 using EnergsoftInterview.Api.DTOs;
-using EnergsoftInterview.Api.Common;
+using EnergsoftInterview.Api.Common.DataContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnergsoftInterview.Tests.Services
 {
+    public class TestAppDbContext : AppDbContext
+    {
+        public TestAppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    }
+
     public class MeasurementServiceTests
     {
         [Fact]
@@ -18,7 +24,7 @@ namespace EnergsoftInterview.Tests.Services
 
             var mockTenantContext = new Mock<ITenantContext>();
             mockTenantContext.Setup(tc => tc.GetTenantIdAsync())
-                             .ReturnsAsync(tenantId);
+                           .ReturnsAsync(tenantId);
 
             var measurements = new List<Measurement>
             {
@@ -27,14 +33,23 @@ namespace EnergsoftInterview.Tests.Services
             };
 
             var mockRepo = new Mock<IMeasurementRepository>();
-            mockRepo.Setup(repo => repo.GetMeasurementsAsync(tenantId, page, pageSize))
-                    .ReturnsAsync(new PagedResult<Measurement>
-                    {
-                        TotalCount = measurements.Count,
-                        Items = measurements
-                    });
+            mockRepo.Setup(repo => repo.GetMeasurementsAsync(
+                It.IsAny<int>(), 
+                It.IsAny<int>(), 
+                It.IsAny<int>(), 
+                It.IsAny<string?>()))
+                   .ReturnsAsync(new PagedResultDto<Measurement>
+                   {
+                       TotalCount = measurements.Count,
+                       Items = measurements,
+                       ContinuationToken = null
+                   });
 
-            var service = new MeasurementService(mockRepo.Object, mockTenantContext.Object);
+            var mockFactory = new Mock<IMeasurementRepositoryFactory>();
+            mockFactory.Setup(f => f.CreateAsync(tenantId))
+                      .ReturnsAsync(mockRepo.Object);
+
+            var service = new MeasurementService(mockFactory.Object, mockTenantContext.Object);
 
             var result = await service.GetMeasurementsAsync(page, pageSize);
 

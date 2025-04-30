@@ -5,6 +5,6 @@ namespace EnergsoftInterview.Api.Repositories
 {
     public interface IMeasurementRepository
     {
-        Task<PagedResult<Measurement>> GetMeasurementsAsync(int tenantId, int page, int pageSize);
+        Task<PagedResultDto<Measurement>> GetMeasurementsAsync(int tenantId, int page, int pageSize, string? continuationToken = null);
     }
 }

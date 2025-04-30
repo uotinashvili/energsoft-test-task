@@ -1,7 +1,7 @@
 using EnergsoftInterview.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace EnergsoftInterview.Api.Common
+namespace EnergsoftInterview.Api.Common.DataContext
 {
     public class TenantContext : ITenantContext
     {
