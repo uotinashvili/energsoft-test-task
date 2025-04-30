@@ -99,13 +99,17 @@ open notebook/verify_data.ipynb file and set variables in a proper sections:
 - to read data from Azure SQL Server, you don't need to pass continuationToken as param. api_key could be api_key_1, api_key_2 based on customer
 - to read data from CosmosDB, at first call you don't need to pass continuationToken, but every next call you need to pass it returned from the previous call.
 
+```bash
 api_key_1 : SQL : customer_1
 api_key_2 : SQL : customer_2
 api_key_3 : CosmosDB : customer_3
+```
 
-- base_url = "http://localhost:5103"  **Change if needed**
-- measurements_endpoint = f"{base_url}/api/measurements?page=1&pageSize=3&continuationToken=" **Change if needed**
-- api_key = "api_key_1" **Actual api_key values (api_key_2, api_key_3)**
+```bash
+- base_url = "http://localhost:5103"
+- measurements_endpoint = f"{base_url}/api/measurements?page=1&pageSize=3&continuationToken="
+- api_key = "api_key_1"
+```
 
 ```bash
 cd notebook
