@@ -7,7 +7,7 @@ namespace EnergsoftInterview.Api.Entities
         public double Current { get; set; }
         public double Temperature { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-        public int TenantId { get; set; }
-        public Tenant Tenant { get; set; } = default!;
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; } = default!;
     }
 }

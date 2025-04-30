@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnergsoftInterview.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250429142410_Tenants")]
-    partial class Tenants
+    [Migration("20250430145930_InitializeDatabase")]
+    partial class InitializeDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,30 @@ namespace EnergsoftInterview.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EnergsoftInterview.Api.Entities.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DataSource")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
 
             modelBuilder.Entity("EnergsoftInterview.Api.Entities.Measurement", b =>
                 {
@@ -36,11 +60,11 @@ namespace EnergsoftInterview.Api.Migrations
                     b.Property<double>("Current")
                         .HasColumnType("float");
 
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Temperature")
                         .HasColumnType("float");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -50,41 +74,20 @@ namespace EnergsoftInterview.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Measurements");
                 });
 
-            modelBuilder.Entity("EnergsoftInterview.Api.Entities.Tenant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tenants");
-                });
-
             modelBuilder.Entity("EnergsoftInterview.Api.Entities.Measurement", b =>
                 {
-                    b.HasOne("EnergsoftInterview.Api.Entities.Tenant", "Tenant")
+                    b.HasOne("EnergsoftInterview.Api.Entities.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("TenantId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Tenant");
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

@@ -14,10 +14,10 @@ namespace EnergsoftInterview.Api.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<IMeasurementRepository> CreateAsync(int tenantId)
+        public async Task<IMeasurementRepository> CreateAsync(int customerId)
         {
-            var tenant = await _appDbContext.Tenants.FindAsync(tenantId);
-            return tenant?.DataSource switch
+            var customer = await _appDbContext.Customers.FindAsync(customerId);
+            return customer?.DataSource switch
             {
                 DataSourceType.CosmosDb => _serviceProvider.GetRequiredService<CosmosMeasurementRepository>(),
                 _ => _serviceProvider.GetRequiredService<SqlMeasurementRepository>()

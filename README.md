@@ -9,9 +9,13 @@ A simple .NET 8 API service that fetches mock data from Azure SQL Server.
 - ✅ .NET 8 Web API project
 - ✅ Fetches data from **Azure SQL Server**
 - ✅ Exposes a REST endpoint returning structured DTOs
-- ✅ Reads SQL connection string from **environment variables**
-- ✅ Token-based **multi-tenant authentication**
-- ✅ **Caching** for tenant
+- ✅ Reads SQL and CosmosDB connection string from **environment variables**
+- ✅ Token-based **multi-customer authentication**
+- ✅ **PartitionKey** for CosmosDB
+- ✅ **Runtime** database switcher
+- ✅ **Parametrized** CosmosDB inline performance optimized queries
+- ✅ Server-side **paging** with **continuation tokens**
+- ✅ **Caching** for customer
 - ✅ **Pagination** support
 - ✅ **Unit tests** using xUnit and Moq
 - ✅ Common **error handling middleware**
@@ -52,6 +56,15 @@ source ~/.zshrc
 $env:DefaultConnection="Server=<server_name>;Initial Catalog=EnergsoftTestDb;Persist Security Info=False;User ID=<your_username>;Password=<your_password>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 ```
 
+**For CosmosDB**
+
+Environment variables:
+
+```bash
+export COCSMOSDB_CONNECTIONSTRING="AccountEndpoint=https://energsoft-cosmos.documents.azure.com:443/;AccountKey=<your_cosmosdb_key>;"
+export COSMOSDB_DATABASE="EnergsoftDB"
+export COSMOSDB_CONTAINER="Measurements"
+```
 ---
 
 ### ▶️ Run the app
@@ -83,8 +96,8 @@ dotnet test
 open notebook/verify_data.ipynb file and set Configuration variables:
 
 - base_url = "http://localhost:5103"  # Change if needed
-- endpoint = "/api/measurements?page=1&pageSize=10" # Change page and pageSize if needed
-- token = "Tenant_1_token"  # Actual token values (Tenant_1_token, Tenant_2_token)
+- endpoint = "/api/measurements?page=1&pageSize=1&continuationToken=" # Change page and pageSize if needed
+- token = "token_1"  # Actual token values (token_1: dataSource=SQL, token_2: dataSource=SQL, token_3: dataSource=CosmosDB)
 
 ```bash
 cd notebook

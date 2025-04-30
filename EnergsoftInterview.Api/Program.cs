@@ -47,8 +47,8 @@ builder.Services.AddScoped<SqlMeasurementRepository>();
 builder.Services.AddScoped<CosmosMeasurementRepository>();
 builder.Services.AddScoped<IMeasurementRepositoryFactory, MeasurementRepositoryFactory>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
-builder.Services.AddScoped<ITenantService, TenantService>();
-builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerContext, CustomerContext>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
@@ -66,9 +66,9 @@ if (app.Environment.IsDevelopment())
 
 app.Use(async (context, next) =>
 {
-    if (context.Request.Headers.TryGetValue("X-Tenant-Token", out var token))
+    if (context.Request.Headers.TryGetValue("X-Customer-Token", out var token))
     {
-        context.Items["TenantToken"] = token.ToString();
+        context.Items["CustomerToken"] = token.ToString();
     }
 
     await next();

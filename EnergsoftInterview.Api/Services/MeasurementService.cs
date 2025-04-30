@@ -7,22 +7,22 @@ namespace EnergsoftInterview.Api.Services
     public class MeasurementService : IMeasurementService
     {
         private readonly IMeasurementRepositoryFactory _factory;
-        private readonly ITenantContext _tenantContext;
+        private readonly ICustomerContext _customerContext;
 
         public MeasurementService(
             IMeasurementRepositoryFactory factory,
-            ITenantContext tenantContext)
+            ICustomerContext customerContext)
         {
             _factory = factory;
-            _tenantContext = tenantContext;
+            _customerContext = customerContext;
         }
 
         public async Task<PagedResultDto<MeasurementDto>> GetMeasurementsAsync(int page, int pageSize, string? continuationToken = null)
         {
-            var tenantId = await _tenantContext.GetTenantIdAsync();
-            var repo = await _factory.CreateAsync(tenantId);
+            var customerId = await _customerContext.GetCustomerIdAsync();
+            var repo = await _factory.CreateAsync(customerId);
 
-            var result = await repo.GetMeasurementsAsync(tenantId, page, pageSize, continuationToken);
+            var result = await repo.GetMeasurementsAsync(customerId, page, pageSize, continuationToken);
 
             var measurements = result.Items.Select(m => new MeasurementDto
             {

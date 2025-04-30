@@ -18,13 +18,13 @@ namespace EnergsoftInterview.Tests.Services
         [Fact]
         public async Task GetMeasurementsAsync_ReturnsData()
         {
-            var tenantId = 1;
+            var customerId = 1;
             var page = 1;
             var pageSize = 10;
 
-            var mockTenantContext = new Mock<ITenantContext>();
-            mockTenantContext.Setup(tc => tc.GetTenantIdAsync())
-                           .ReturnsAsync(tenantId);
+            var mockCustomerContext = new Mock<ICustomerContext>();
+            mockCustomerContext.Setup(tc => tc.GetCustomerIdAsync())
+                           .ReturnsAsync(customerId);
 
             var measurements = new List<Measurement>
             {
@@ -46,10 +46,10 @@ namespace EnergsoftInterview.Tests.Services
                    });
 
             var mockFactory = new Mock<IMeasurementRepositoryFactory>();
-            mockFactory.Setup(f => f.CreateAsync(tenantId))
+            mockFactory.Setup(f => f.CreateAsync(customerId))
                       .ReturnsAsync(mockRepo.Object);
 
-            var service = new MeasurementService(mockFactory.Object, mockTenantContext.Object);
+            var service = new MeasurementService(mockFactory.Object, mockCustomerContext.Object);
 
             var result = await service.GetMeasurementsAsync(page, pageSize);
 

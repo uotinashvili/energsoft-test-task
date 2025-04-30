@@ -18,11 +18,11 @@ namespace EnergsoftInterview.Api.Repositories
             _container = client.GetDatabase(settings.DatabaseName).GetContainer(settings.ContainerName);
         }
 
-        public async Task<PagedResultDto<Measurement>> GetMeasurementsAsync(int tenantId, int page, int pageSize, string? continuationToken = null)
+        public async Task<PagedResultDto<Measurement>> GetMeasurementsAsync(int customerId, int page, int pageSize, string? continuationToken = null)
         {
             var processedToken = ContinuationTokenHelper.DecodeToken(continuationToken);
-            var results = await GetMeasurementsPageAsync(tenantId, pageSize, processedToken);
-            var totalCount = await GetTotalCountAsync(tenantId);
+            var results = await GetMeasurementsPageAsync(customerId, pageSize, processedToken);
+            var totalCount = await GetTotalCountAsync(customerId);
             var formattedToken = ContinuationTokenHelper.EncodeToken(results.ContinuationToken);
 
             return new PagedResultDto<Measurement>
@@ -33,15 +33,14 @@ namespace EnergsoftInterview.Api.Repositories
             };
         }
 
-        private async Task<(List<Measurement> Items, string? ContinuationToken)> GetMeasurementsPageAsync(int tenantId, int pageSize, string? continuationToken)
+        private async Task<(List<Measurement> Items, string? ContinuationToken)> GetMeasurementsPageAsync(int customerId, int pageSize, string? continuationToken)
         {
             var queryDefinition = new QueryDefinition(
-                "SELECT * FROM c WHERE c.TenantId = @tenantId ORDER BY c.Timestamp DESC")
-                .WithParameter("@tenantId", tenantId);
+                "SELECT * FROM c WHERE c.CustomerId = @customerId ORDER BY c.Timestamp DESC")
+                .WithParameter("@customerId", customerId);
 
             var queryRequestOptions = new QueryRequestOptions
             {
-                PartitionKey = new PartitionKey(tenantId),
                 MaxItemCount = pageSize
             };
 
@@ -57,12 +56,12 @@ namespace EnergsoftInterview.Api.Repositories
             return (results, response.ContinuationToken);
         }
 
-        private async Task<int> GetTotalCountAsync(int tenantId)
+        private async Task<int> GetTotalCountAsync(int customerId)
         {
-            var countQuery = new QueryDefinition("SELECT VALUE COUNT(1) FROM c WHERE c.TenantId = @tenantId")
-                .WithParameter("@tenantId", tenantId);
+            var countQuery = new QueryDefinition("SELECT VALUE COUNT(1) FROM c WHERE c.CustomerId = @customerId")
+                .WithParameter("@customerId", customerId);
 
-            var countOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(tenantId) };
+            var countOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(customerId) };
             using var countIterator = _container.GetItemQueryIterator<int>(countQuery, requestOptions: countOptions);
 
             int totalCount = 0;

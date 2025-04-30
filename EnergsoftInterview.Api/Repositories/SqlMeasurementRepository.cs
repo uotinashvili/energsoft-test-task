@@ -14,10 +14,10 @@ namespace EnergsoftInterview.Api.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<PagedResultDto<Measurement>> GetMeasurementsAsync(int tenantId, int page, int pageSize, string? continuationToken = null)
+        public async Task<PagedResultDto<Measurement>> GetMeasurementsAsync(int customerId, int page, int pageSize, string? continuationToken = null)
         {
             var query = _appDbContext.Measurements
-                .Where(m => m.TenantId == tenantId)
+                .Where(m => m.CustomerId == customerId)
                 .OrderByDescending(m => m.Timestamp);
 
             var totalCount = await query.CountAsync();
