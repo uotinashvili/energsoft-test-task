@@ -6,7 +6,7 @@ namespace EnergsoftInterview.Api.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;
-        public string Token { get; set; } = default!;
+        public string ApiKey { get; set; } = default!;
         public DataSourceType DataSource { get; set; }
     }
 } 

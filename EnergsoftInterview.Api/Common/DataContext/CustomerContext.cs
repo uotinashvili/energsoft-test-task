@@ -6,28 +6,32 @@ namespace EnergsoftInterview.Api.Common.DataContext
     public class CustomerContext : ICustomerContext
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICustomerService _customerService;
+        private readonly JwtAuthenticationService _jwtService;
         private int? _cachedCustomerId;
 
-        public CustomerContext(IHttpContextAccessor httpContextAccessor, ICustomerService customerService)
+        public CustomerContext(IHttpContextAccessor httpContextAccessor, JwtAuthenticationService jwtService)
         {
             _httpContextAccessor = httpContextAccessor;
-            _customerService = customerService;
+            _jwtService = jwtService;
         }
 
         public async Task<int> GetCustomerIdAsync()
         {
             if (_cachedCustomerId.HasValue)
-                return _cachedCustomerId.Value;
+                return await Task.FromResult(_cachedCustomerId.Value);
 
-            var token = _httpContextAccessor.HttpContext?.Items["CustomerToken"]?.ToString();
-            if (string.IsNullOrEmpty(token))
-                throw new UnauthorizedAccessException("Missing customer token.");
+            var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                throw new UnauthorizedAccessException("Missing or invalid authorization header.");
 
-            var customerId = await _customerService.GetCustomerIdAsync(token);
+            var token = authHeader.Substring("Bearer ".Length).Trim();
+            var customerId = _jwtService.ValidateToken(token);
+            
+            if (!customerId.HasValue)
+                throw new UnauthorizedAccessException("Invalid JWT token.");
 
-            _cachedCustomerId = customerId;
-            return _cachedCustomerId.Value;
+            _cachedCustomerId = customerId.Value;
+            return await Task.FromResult(_cachedCustomerId.Value);
         }
     }
 } 

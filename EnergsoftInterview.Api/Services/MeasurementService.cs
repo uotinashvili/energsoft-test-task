@@ -21,22 +21,19 @@ namespace EnergsoftInterview.Api.Services
         {
             var customerId = await _customerContext.GetCustomerIdAsync();
             var repo = await _factory.CreateAsync(customerId);
-
             var result = await repo.GetMeasurementsAsync(customerId, page, pageSize, continuationToken);
-
-            var measurements = result.Items.Select(m => new MeasurementDto
-            {
-                Id = m.Id,
-                Voltage = m.Voltage,
-                Current = m.Current,
-                Temperature = m.Temperature,
-                Timestamp = m.Timestamp
-            });
 
             return new PagedResultDto<MeasurementDto>
             {
                 TotalCount = result.TotalCount,
-                Items = measurements,
+                Items = result.Items.Select(m => new MeasurementDto
+                {
+                    Id = m.Id,
+                    Voltage = m.Voltage,
+                    Current = m.Current,
+                    Temperature = m.Temperature,
+                    Timestamp = m.Timestamp
+                }).ToList(),
                 ContinuationToken = result.ContinuationToken
             };
         }

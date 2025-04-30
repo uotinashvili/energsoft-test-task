@@ -5,6 +5,9 @@ using EnergsoftInterview.Api.Middleware;
 using EnergsoftInterview.Api.Repositories;
 using EnergsoftInterview.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,12 +46,29 @@ builder.Services.Configure<CosmosDbSettings>(options =>
     options.ContainerName = containerName;
 });
 
+// Configure JWT Authentication
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("JWT Secret is not configured");
+var key = Encoding.ASCII.GetBytes(jwtSecret);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
 builder.Services.AddScoped<SqlMeasurementRepository>();
 builder.Services.AddScoped<CosmosMeasurementRepository>();
 builder.Services.AddScoped<IMeasurementRepositoryFactory, MeasurementRepositoryFactory>();
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerContext, CustomerContext>();
+builder.Services.AddScoped<JwtAuthenticationService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
@@ -64,16 +84,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Headers.TryGetValue("X-Customer-Token", out var token))
-    {
-        context.Items["CustomerToken"] = token.ToString();
-    }
-
-    await next();
-});
-
+app.UseAuthentication();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();

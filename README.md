@@ -93,7 +93,7 @@ dotnet test
 
 ## 📌 Test and Run with jupyter notebook
 
-open notebook/verify_data.ipynb file and set Configuration variables:
+open notebook/verify_data.ipynb file and set variables in a proper sections:
 
 - base_url = "http://localhost:5103"  # Change if needed
 - endpoint = "/api/measurements?page=1&pageSize=1&continuationToken=" # Change page and pageSize if needed

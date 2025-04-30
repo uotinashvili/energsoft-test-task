@@ -24,7 +24,7 @@ namespace EnergsoftInterview.Tests.Services
 
             var mockCustomerContext = new Mock<ICustomerContext>();
             mockCustomerContext.Setup(tc => tc.GetCustomerIdAsync())
-                           .ReturnsAsync(customerId);
+                               .ReturnsAsync(customerId);
 
             var measurements = new List<Measurement>
             {
