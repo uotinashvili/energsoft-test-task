@@ -10,7 +10,7 @@ A simple .NET 8 API service that fetches mock data from Azure SQL Server.
 - ✅ Fetches data from **Azure SQL Server**
 - ✅ Exposes a REST endpoint returning structured DTOs
 - ✅ Reads SQL and CosmosDB connection string from **environment variables**
-- ✅ Token-based **multi-customer authentication**
+- ✅ JWT **multi-customer authentication**
 - ✅ **PartitionKey** for CosmosDB
 - ✅ **Runtime** database switcher
 - ✅ **Parametrized** CosmosDB inline performance optimized queries
@@ -95,9 +95,13 @@ dotnet test
 
 open notebook/verify_data.ipynb file and set variables in a proper sections:
 
-- base_url = "http://localhost:5103"  # Change if needed
-- endpoint = "/api/measurements?page=1&pageSize=1&continuationToken=" # Change page and pageSize if needed
-- token = "token_1"  # Actual token values (token_1: dataSource=SQL, token_2: dataSource=SQL, token_3: dataSource=CosmosDB)
+- at first you have to send POST request to api/auth/token with "X-API-Key" header (value will be api_key_1, api_key_2, etc...)
+- to ready data from Azure SQL Server, you don't need to pass continuationToken as param. api_key could be api_key_1, api_key_2, api_key_3 based on customer
+- to ready data from CosmosDB, at first call you don't need to pass continuationToken, but every next call you need to pass it returned from the previous call.
+
+- base_url = "http://localhost:5103"  **Change if needed**
+- measurements_endpoint = f"{base_url}/api/measurements?page=1&pageSize=3&continuationToken=" **Change if needed**
+- api_key = "api_key_1" **Actual api_key values (api_key_2, api_key_3)**
 
 ```bash
 cd notebook
